@@ -99,7 +99,11 @@ Pre-built binaries are available on the [Releases Page](https://github.com/hemil
 ./start_popmd.sh
 ```
 
+<<<<<<< HEAD
 ### 🌐 Web
+=======
+### 🌐Web
+>>>>>>> 8f4efc4 (Update release version)
 
 There is also a web interface that can be used to run a PoP miner.
 Build and run the web interface with:
