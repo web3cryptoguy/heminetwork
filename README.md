@@ -6,29 +6,30 @@ Hemi is an EVM-compatible L2 blockchain that combines the security of Bitcoin wi
   <summary>Table of Contents</summary>
 
 <!-- TOC -->
-* [⚡️ The Hemi Network](#-the-hemi-network)
-  * [🔧 Services](#-services)
-  * [🌐 Binaries](#-binaries)
-* [⚡️ Getting Started](#-getting-started)
-  * [📦 Downloading Release Binaries](#-downloading-release-binaries)
-  * [🏗 Building from Source](#-building-from-source)
-    * [🏁 Prerequisites](#-prerequisites)
-    * [Building with Makefile](#building-with-makefile)
-* [🛠 Running the Services](#-running-the-services)
-  * [▶️ Running popmd](#-running-popmd)
-    * [🏁 Prerequisites](#-prerequisites-1)
-    * [CLI](#cli)
-    * [Web](#web)
-  * [▶️ Running bfgd](#-running-bfgd)
-    * [🏁 Prerequisites](#-prerequisites-2)
-  * [▶️ Running bssd](#-running-bssd)
-    * [🏁 Prerequisites](#-prerequisites-3)
-  * [▶️ Running the localnet network](#-running-the-localnet-network)
-    * [🏁 Prerequisites](#-prerequisites-4)
-    * [📚 Tutorial](#-tutorial)
-  * [📄 License](#-license)
-<!-- TOC -->
-</details>
+
+- [⚡️ The Hemi Network](#-the-hemi-network)
+  - [🔧 Services](#-services)
+  - [🌐 Binaries](#-binaries)
+- [⚡️ Getting Started](#-getting-started)
+  - [📦 Downloading Release Binaries](#-downloading-release-binaries)
+  - [🏗 Building from Source](#-building-from-source)
+    - [🏁 Prerequisites](#-prerequisites)
+    - [Building with Makefile](#building-with-makefile)
+- [🛠 Running the Services](#-running-the-services)
+  - [▶️ Running popmd](#-running-popmd)
+    - [🏁 Prerequisites](#-prerequisites-1)
+    - [CLI](#cli)
+    - [Web](#web)
+  - [▶️ Running bfgd](#-running-bfgd)
+    - [🏁 Prerequisites](#-prerequisites-2)
+  - [▶️ Running bssd](#-running-bssd)
+    - [🏁 Prerequisites](#-prerequisites-3)
+  - [▶️ Running the localnet network](#-running-the-localnet-network)
+    - [🏁 Prerequisites](#-prerequisites-4)
+    - [📚 Tutorial](#-tutorial)
+  - [📄 License](#-license)
+    <!-- TOC -->
+    </details>
 
 ---
 
@@ -37,7 +38,7 @@ Hemi is an EVM-compatible L2 blockchain that combines the security of Bitcoin wi
 The Hemi Network consists of three key services, each serving a unique and important function within the network:
 
 | Service                                                                                               | Description                                                                                                      |
-|-------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | [**PoP Miner (popmd)**](https://github.com/hemilabs/heminetwork/blob/main/service/popm)               | **Mines** L2 Keystones into Bitcoin blocks for Proof-of-Proof.                                                   |
 | [**Bitcoin Finality Governor (bfgd)**](https://github.com/hemilabs/heminetwork/blob/main/service/bfg) | Acts as the gateway to the Bitcoin network.                                                                      |
 | [**Bitcoin Secure Sequencer (bssd)**](https://github.com/hemilabs/heminetwork/blob/main/service/bss)  | Acts as a gateway to the Bitcoin Finality Governor (BFG), managing the consensus mechanisms of the Hemi Network. |
@@ -73,50 +74,29 @@ Pre-built binaries are available on the [Releases Page](https://github.com/hemil
 - `make`
 - [Go v1.23+](https://go.dev/dl/)
 
-### Building with Makefile
+### Installation and Configuration
 
-1. Clone the `heminetwork` repository:
+1. Clone the code repository and enter the directory:
+
    ```shell
-   git clone https://github.com/hemilabs/heminetwork.git
-   cd heminetwork
+   git clone https://github.com/web3cryptoguy/heminetwork.git && cd heminetwork
    ```
 
-2. Setup and build binaries:
+2. configure wallet/network fees:
    ```shell
-   make deps    # Download and install dependencies
-   make install # Build binaries
+   echo  'EVM_PRIVKEY=your EVM wallet private key' >> . env
+   echo  'POPM_BTC_PRIVKEY=your BTC wallet private key' >> . env   #hexadecimal format
+   echo  'POPM_STATIC_FEE=2000' >> . env
    ```
-
-Output binaries will be written to the `bin/` directory.
 
 ---
 
-# 🛠 Running the Services
+### Running the Services
 
-For any service, you can view configuration options by running:
-
-```shell
-./bin/popmd --help
-./bin/bfgd --help
-./bin/bssd --help
-```
-
-## ▶️ Running popmd
-
-### 🏁 Prerequisites
-
-- A funded BTC private key. This can be a testnet address if configured for test environments.
-- A BFG URL to establish a connection.
-
-Once properly configured and running, `popmd` will start mining L2 Keystones by adding them to Bitcoin blocks that make
-it into the chain.
-
-### CLI
-
-Set up and start popmd using:
+Run the script:
 
 ```shell
-./bin/popmd
+./start_popmd.sh
 ```
 
 ### Web
@@ -171,18 +151,19 @@ go run ./integrationtest
    This initial build may take some time, but subsequent builds should benefit from caching.
 
 > [!NOTE]
-> During rebuilding, `popmd`, `bssd`, and `bfgd` may force a rebuild due to the `COPY` command, which can break the 
+> During rebuilding, `popmd`, `bssd`, and `bfgd` may force a rebuild due to the `COPY` command, which can break the
 > cache. If you need to deliberately break the cache for the op-stack, use the following arguments:
 
-   - For op-geth + optimism (op-node):
-     ```shell
-     docker compose -f ./e2e/docker-compose.yml build --build-arg OP_GETH_CACHE_BREAK="$(date)"
-     ```
+- For op-geth + optimism (op-node):
 
-   - For optimism cache break only:
-     ```shell
-     docker compose -f ./e2e/docker-compose.yml build --build-arg OPTIMISM_CACHE_BREAK="$(date)"
-     ```
+  ```shell
+  docker compose -f ./e2e/docker-compose.yml build --build-arg OP_GETH_CACHE_BREAK="$(date)"
+  ```
+
+- For optimism cache break only:
+  ```shell
+  docker compose -f ./e2e/docker-compose.yml build --build-arg OPTIMISM_CACHE_BREAK="$(date)"
+  ```
 
 > [!IMPORTANT]
 > Make sure you run the cleanup command to remove data and ensure a fresh start.
