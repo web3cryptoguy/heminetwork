@@ -91,9 +91,9 @@ Pre-built binaries are available on the [Releases Page](https://github.com/hemil
 
 ---
 
-### Running the Services
+## ▶️ Running popmd
 
-Run the script:
+### Run the script
 
 ```shell
 ./start_popmd.sh
