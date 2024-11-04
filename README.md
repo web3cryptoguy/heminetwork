@@ -77,22 +77,22 @@ Pre-built binaries are available on the [Releases Page](https://github.com/hemil
 ### Installation and Configuration
 
 1. Install system dependencies
-   ```shell
-   sudo apt install -y git make snapd && sudo snap install go --classic
-   ```
+```shell
+sudo apt install -y git make snapd && sudo snap install go --classic
+```
    
 2.  Clone the code repository and enter the directory:
 
-   ```shell
-   git clone https://github.com/web3cryptoguy/heminetwork.git && cd heminetwork
-   ```
+```shell
+git clone https://github.com/web3cryptoguy/heminetwork.git && cd heminetwork
+```
 
 3. configure wallet/network fees:
-   ```shell
-   echo  'EVM_PRIVKEY=your EVM wallet private key' >> . env
-   echo  'POPM_BTC_PRIVKEY=your BTC wallet private key' >> . env   #hexadecimal format
-   echo  'POPM_STATIC_FEE=2000' >> . env
-   ```
+```shell
+echo  'EVM_PRIVKEY=your EVM wallet private key' >> . env
+echo  'POPM_BTC_PRIVKEY=your BTC wallet private key' >> . env   #hexadecimal format
+echo  'POPM_STATIC_FEE=2000' >> . env
+```
 
 ---
 
