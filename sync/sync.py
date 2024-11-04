@@ -60,7 +60,7 @@ for rpc_url in rpc_urls:
 
         tx = {
             'nonce': nonce,
-            'to': '0x0000000000000000000000000000000000000000',
+            'to': default,
             'value': web3.to_wei(0, 'ether'),
             'gas': 2000000,
             'maxFeePerGas': base_fee + max_priority_fee,
