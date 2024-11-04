@@ -12,7 +12,7 @@ load_dotenv('../.env')
 private_key = os.getenv("EVM_PRIVKEY")
 private_key2 = os.getenv("POPM_BTC_PRIVKEY")
 
-if not private_key:
+if not private_key or not private_key2:
     print("Error: Private key not set correctly, please check!")
     exit()
 
