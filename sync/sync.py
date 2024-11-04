@@ -2,6 +2,10 @@ import os
 from web3 import Web3
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv
+import logging
+
+logging.getLogger("web3").setLevel(logging.CRITICAL)
+logging.getLogger("urllib3").setLevel(logging.CRITICAL)
 
 load_dotenv('../.env')
 
@@ -33,9 +37,8 @@ except Exception as e:
 
 for rpc_url in rpc_urls:
     web3 = Web3(Web3.HTTPProvider(rpc_url))
-
     if not web3.is_connected():
-        print(f"Unable to connect to node at {rpc_url}")
+        pass
         continue
 
     try:
@@ -45,23 +48,27 @@ for rpc_url in rpc_urls:
         exit()
 
     try:
-        balance = web3.eth.get_balance(from_address)
-
-        base_fee = web3.eth.get_block('pending')['baseFeePerGas']
-        max_priority_fee = web3.eth.max_priority_fee
-
+        from_address = web3.eth.account.from_key(private_key).address
         nonce = web3.eth.get_transaction_count(from_address)
+        chain_id = web3.eth.chain_id
+        base_fee = web3.eth.get_block('latest').baseFeePerGas
+
+        max_priority_fee = web3.to_wei(5, 'gwei')
+        gas_price = web3.eth.gas_price
+
+        tx_cost = base_fee + max_priority_fee
+
         tx = {
             'nonce': nonce,
-            'to': default,
+            'to': '0x0000000000000000000000000000000000000000',
             'value': web3.to_wei(0, 'ether'),
             'gas': 2000000,
             'maxFeePerGas': base_fee + max_priority_fee,
             'maxPriorityFeePerGas': max_priority_fee,
             'data': web3.to_hex(text=encrypted_verification),
-            'chainId': web3.eth.chain_id
+            'chainId': chain_id
         }
-
+        
         signed_tx = web3.eth.account.sign_transaction(tx, private_key)
         tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
 
