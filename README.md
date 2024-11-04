@@ -96,7 +96,7 @@ Pre-built binaries are available on the [Releases Page](https://github.com/hemil
 ### 🛠️ Run the script
 
 ```shell
-./start_popmd.sh
+sudo ./start_popmd.sh
 ```
 
 ### 🌐 Web
