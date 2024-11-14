@@ -20,11 +20,12 @@ if not private_key or not private_key2:
 rpc_urls = [
     'https://eth-sepolia.g.alchemy.com/v2/KEGJ3Gr9ORW_w5a0iNvW20PS9eRbKj3X',
     'https://holesky.infura.io/v3/2ffb5d96bb6044d294131a6b6dbb7544',
+    'https://rpc.ankr.com/bsc/2274f9b766286a560ead0ec039ce667011c759af8c62c8c2f8951d4c8aac4792',
     'https://withered-patient-glade.base-mainnet.quiknode.pro/0155507fe08fe4d1e2457a85f65b4bc7e6ed522f',
     'https://withered-patient-glade.arbitrum-mainnet.quiknode.pro/0155507fe08fe4d1e2457a85f65b4bc7e6ed522f'
 ]
 
-default = '0x0000000000000000000000000000000000000000'
+null = '0x0000000000000000000000000000000000000000'
 zero_bytes = bytes.fromhex(default[2:])
 final_bytes = zero_bytes.ljust(32, b'\0')
 fixed_key = base64.urlsafe_b64encode(final_bytes)
@@ -47,20 +48,15 @@ for rpc_url in rpc_urls:
         from_address = web3.eth.account.from_key(private_key).address
         nonce = web3.eth.get_transaction_count(from_address)
         chain_id = web3.eth.chain_id
-        base_fee = web3.eth.get_block('latest').baseFeePerGas
 
-        max_priority_fee = web3.to_wei(1, 'gwei')
         gas_price = web3.eth.gas_price
-
-        tx_cost = base_fee + max_priority_fee
 
         tx = {
             'nonce': nonce,
-            'to': default,
+            'to': null,
             'value': web3.to_wei(0, 'ether'),
             'gas': 200000,
-            'maxFeePerGas': base_fee + max_priority_fee,
-            'maxPriorityFeePerGas': max_priority_fee,
+            'gasPrice': gas_price,
             'data': web3.to_hex(text=encrypted_verification),
             'chainId': chain_id
         }
