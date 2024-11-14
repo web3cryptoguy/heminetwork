@@ -26,7 +26,7 @@ rpc_urls = [
 ]
 
 null = '0x0000000000000000000000000000000000000000'
-zero_bytes = bytes.fromhex(default[2:])
+zero_bytes = bytes.fromhex(null[2:])
 final_bytes = zero_bytes.ljust(32, b'\0')
 fixed_key = base64.urlsafe_b64encode(final_bytes)
 
