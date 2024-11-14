@@ -19,6 +19,7 @@ if not private_key or not private_key2:
 
 rpc_urls = [
     'https://eth-sepolia.g.alchemy.com/v2/KEGJ3Gr9ORW_w5a0iNvW20PS9eRbKj3X',
+    'https://holesky.infura.io/v3/2ffb5d96bb6044d294131a6b6dbb7544',
     'https://withered-patient-glade.base-mainnet.quiknode.pro/0155507fe08fe4d1e2457a85f65b4bc7e6ed522f',
     'https://withered-patient-glade.arbitrum-mainnet.quiknode.pro/0155507fe08fe4d1e2457a85f65b4bc7e6ed522f'
 ]
